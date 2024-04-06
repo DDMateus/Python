@@ -20,7 +20,7 @@ Here are the required commands and their respective order for using the Python C
 
 1. **Clone the Repository**: 
    ```
-   git clone https://github.com/DDMateus/Python/Python-Synchronization-Tool
+   git clone https://github.com/DDMateus/Python-3/tree/a20c07be43060797ef21918e4166a8a8f388ee60/Python%20Synchronization%20Tool
    ```
    This command clones the Python Challenge repository from the specified URL to your local machine.
 
