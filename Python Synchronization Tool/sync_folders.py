@@ -6,7 +6,7 @@ import time
 import hashlib
 
 # Calculate the SHA256 hash of a file
-def calculate_checksum(file_path, algorithm='sha256'):
+def calculate_checksum(file_path, algorithm="sha256"):
     hasher = hashlib.new(algorithm)
     with open(file_path, "rb") as file:
         while True:
@@ -114,5 +114,5 @@ def main():
     
     schedule_sync(args.source_path, args.replica_path, args.sync_interval, args.log_file_path)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
