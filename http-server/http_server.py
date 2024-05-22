@@ -44,26 +44,35 @@ class HTTPServer:
         Handle the incoming client connection
         """
         try:
-            # Receive and decode request data
-            request_data = connection_socket.recv(4096).decode()
-            print(f"Received request:\n{request_data}")
-            
-            # Parse the HTTP request data
-            method, request_target, headers, request_body = self.parse_request(request_data)
-            print(method, request_target)
-            # Route requests to the proper handler
-            if request_target == "/":
-                self.send_response(connection_socket, "HTTP/1.1 200 OK\r\n\r\n")
-            elif request_target.startswith("/user-agent"):
-                self.handle_user_agent(connection_socket, headers)
-            elif request_target.startswith("/echo"):
-                self.handle_echo(connection_socket, request_target, headers)
-            elif request_target.startswith("/files") and method == "GET":
-                self.handle_get_files(connection_socket, request_target)
-            elif request_target.startswith("/files") and method == "POST":
-                self.handle_post_files(connection_socket, request_target, request_body)
-            else:
-                self.send_response(connection_socket, STATUS_404)
+            # Keep the TCP connection open for persistent connection
+            while True:
+                # Receive and decode request data
+                request_data = connection_socket.recv(4096).decode()
+                print(f"Received request:\n{request_data}")
+                # No more data, close the connection (client closes the connection)
+                if not request_target:
+                    break
+                
+                # Parse the HTTP request data
+                method, request_target, headers, request_body = self.parse_request(request_data)
+                print(method, request_target)
+                # Route requests to the proper handler
+                if request_target == "/":
+                    self.send_response(connection_socket, "HTTP/1.1 200 OK\r\n\r\n")
+                elif request_target.startswith("/user-agent"):
+                    self.handle_user_agent(connection_socket, headers)
+                elif request_target.startswith("/echo"):
+                    self.handle_echo(connection_socket, request_target, headers)
+                elif request_target.startswith("/files") and method == "GET":
+                    self.handle_get_files(connection_socket, request_target)
+                elif request_target.startswith("/files") and method == "POST":
+                    self.handle_post_files(connection_socket, request_target, request_body)
+                else:
+                    self.send_response(connection_socket, STATUS_404)
+
+                # Check if the client wants to close the connection
+                if headers.get("Connection", "").lower() != "keep-alive":
+                    break      
         except Exception as e:
             print(f"Error handling connection: {e}")
             self.send_response(connection_socket, STATUS_404)
